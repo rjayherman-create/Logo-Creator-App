@@ -119,15 +119,16 @@ const layouts: Array<{ id: LogoLayout; label: string }> = [
 const tones: Tone[] = ["Modern SaaS", "Premium", "Bold Consumer", "Trust"];
 
 export function App() {
-  const [businessName, setBusinessName] = useState("LaunchPilot");
-  const [tagline, setTagline] = useState("AI Startup Launch System");
-  const [industry, setIndustry] = useState("SaaS");
-  const [audience, setAudience] = useState("solo founders");
+  const initialValues = useMemo(() => readInitialValues(), []);
+  const [businessName, setBusinessName] = useState(initialValues.businessName);
+  const [tagline, setTagline] = useState(initialValues.tagline);
+  const [industry, setIndustry] = useState(initialValues.industry);
+  const [audience, setAudience] = useState(initialValues.audience);
   const [tone, setTone] = useState<Tone>("Modern SaaS");
   const [markStyle, setMarkStyle] = useState<MarkStyle>("orbit");
   const [layout, setLayout] = useState<LogoLayout>("lockup");
   const [palette, setPalette] = useState(palettes[0]);
-  const [suiteUrl, setSuiteUrl] = useState("http://localhost:5173");
+  const [suiteUrl, setSuiteUrl] = useState("https://startup-launch-suite-production.up.railway.app/name-app");
   const [copied, setCopied] = useState(false);
 
   const draft = useMemo(
@@ -388,6 +389,25 @@ function createLogoDraft(input: {
         bodyFont: "Inter"
       }
     }
+  };
+}
+
+function readInitialValues() {
+  if (typeof window === "undefined") {
+    return {
+      audience: "solo founders",
+      businessName: "LaunchPilot",
+      industry: "SaaS",
+      tagline: "AI Startup Launch System"
+    };
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  return {
+    audience: params.get("audience") || "solo founders",
+    businessName: params.get("businessName") || "LaunchPilot",
+    industry: params.get("industry") || "SaaS",
+    tagline: params.get("tagline") || "AI Startup Launch System"
   };
 }
 
